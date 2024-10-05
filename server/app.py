@@ -59,7 +59,7 @@ last_detection = None
 
 def gen_frames():
     global is_running, last_frame, last_detection
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     while cap.isOpened():
         if not is_running:
             if last_frame is not None:
@@ -100,6 +100,7 @@ def video_feed():
 
 @app.route('/last_detection')
 def get_last_detection():
+    print("getting detection...")
     global last_frame, last_detection, class_name
     if last_frame is not None and last_detection is not None:
         # Print out the last detected item
@@ -109,8 +110,10 @@ def get_last_detection():
                 confidence = box.conf[0]    # Confidence score
                 class_name = result.names[class_id]  # Class name
                 print(class_name)
+                breakpoint()
                 # add to database
-                db.additem(class_name, "0,0")
+                db.additem(class_name, [0,0])
+                print("added to db")
 
         # Return the last frame as an image
         ret, buffer = cv2.imencode('.jpg', last_frame)

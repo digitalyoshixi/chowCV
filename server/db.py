@@ -37,7 +37,7 @@ def additem(itemname, location):
     	        try:
     	            dbcurs.execute(f"""
     		            INSERT INTO itemlist (item,location) VALUES
-    		            ('{itemname}',{locaiton})
+    		            ('{itemname}',[{location[0]},{location[1]}])
     	            """)
     	        except (Exception, psycopg2.DatabaseError) as error:
     	            print(error)
