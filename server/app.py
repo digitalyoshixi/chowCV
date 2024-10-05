@@ -6,16 +6,14 @@ import numpy as np
 from PIL import Image
 import cv2
 import os
-from flask_cors import CORS,cross_origin
+import db
 
-app = Flask(__name__, template_folder="templates")
+app = Flask(__name__,template_folder="templates")
 
-# Enable CORS for all routes
-CORS(app)
 
 class Detection:
     def __init__(self):
-        # Download weights from https://github.com/ultralytics/ultralytics and change the path
+        #download weights from here:https://github.com/ultralytics/ultralytics and change the path
         self.model = YOLO("yolov8n.pt")
 
     def predict(self, img, classes=[], conf=0.5):
@@ -23,6 +21,7 @@ class Detection:
             results = self.model.predict(img, classes=classes, conf=conf)
         else:
             results = self.model.predict(img, conf=conf)
+
         return results
 
     def predict_and_detect(self, img, classes=[], conf=0.5, rectangle_thickness=3, text_thickness=2):
@@ -43,14 +42,20 @@ class Detection:
 
 detection = Detection()
 
+
+
+
 @app.route('/')
 def index_video():
     return render_template('video.html')
 
-# Global variables for tracking the state of detection and the last frame
 is_running = True
 last_frame = None
 last_detection = None
+
+
+
+
 
 def gen_frames():
     global is_running, last_frame, last_detection
@@ -68,13 +73,11 @@ def gen_frames():
         frame = cv2.resize(frame, (512, 512))
         if frame is None:
             break
-
-        # Apply object detection to the frame
         frame, detections = detection.predict_and_detect(frame)
 
         # Save the last detected frame and detection results
         last_frame = frame
-        last_detection = detections
+        last_detection = detections  # Save the detection results
 
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
@@ -83,29 +86,16 @@ def gen_frames():
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
-@app.route('/stop_detection', methods=["POST"])
-@cross_origin()
+@app.route('/stop_detection', methods = ["post"])
 def stop_detection():
-    global is_running, last_frame
-    is_running = False  # Stop the video stream and detection
-    print("Stopping detection...")  # Debug statement
-
-    # Save the last frame if it exists
-    if last_frame is not None:
-        # Correct relative path to 'server/saved' folder
-        image_path = os.path.join("server", "saved", "last_frame.jpg")  
-
-        # Save the frame as an image file
-        cv2.imwrite(image_path, last_frame)
-        print(f"Last frame saved at {image_path}")
-    else:
-        print("No frame to save.")  # Debug statement if last_frame is None
-
-    return "Detection Stopped, Last Frame Saved", 200
+    global is_running
+    is_running = False
+    return "Detection Stopped", 200
 
 @app.route('/video_feed')
 def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 
 @app.route('/last_detection')
@@ -119,6 +109,9 @@ def get_last_detection():
                 confidence = box.conf[0]    # Confidence score
                 class_name = result.names[class_id]  # Class name
                 print(class_name)
+                # add to database
+                db.additem(class_name, "0,0")
+
         # Return the last frame as an image
         ret, buffer = cv2.imencode('.jpg', last_frame)
         return Response(buffer.tobytes(), mimetype='image/jpeg')
@@ -127,5 +120,5 @@ def get_last_detection():
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8000)
-    # http://localhost:8000/video for video source
-    # http://localhost:8000 for image source
+    #http://localhost:8000/video for video source
+    #http://localhost:8000 for image source
