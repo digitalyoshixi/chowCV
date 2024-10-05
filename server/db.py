@@ -20,4 +20,17 @@ def getitem(item):
             except (Exception, psycopg2.DatabaseError) as error:
                 print(error)
 
+def additem(itemname, expiry, price):
+    with conn: # assuming we have connection
+    	with conn.cursor() as dbcurs:
+    	        try:
+    	            dbcurs.execute(f"""
+    		            INSERT INTO items (itemname,expiry,price) VALUES
+    		            ('{itemname}',{expiry},{price})
+    	            """)
+    	        except (Exception, psycopg2.DatabaseError) as error:
+    	            print(error)
+
 getitem("milk")
+additem("goat", 90, 20)
+getitem("goat")
