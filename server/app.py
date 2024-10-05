@@ -3,10 +3,9 @@ from werkzeug.utils import secure_filename
 import io
 from ultralytics import YOLO
 import numpy as np
-from PIL import Image
 import cv2
 import os
-from flask_cors import CORS,cross_origin
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__, template_folder="templates")
 
@@ -15,7 +14,6 @@ CORS(app)
 
 class Detection:
     def __init__(self):
-        # Download weights from https://github.com/ultralytics/ultralytics and change the path
         self.model = YOLO("yolov8n.pt")
 
     def predict(self, img, classes=[], conf=0.5):
@@ -40,8 +38,13 @@ class Detection:
         result_img, _ = self.predict_and_detect(image, classes=[], conf=0.5)
         return result_img
 
-
 detection = Detection()
+
+@app.route('/display_image')
+def display_image():
+    # Serve the saved image
+    image_path = os.path.join("server", "saved", "last_frame.jpg")
+    return Response(open(image_path, 'rb').read(), mimetype='image/jpeg')
 
 @app.route('/')
 def index_video():
@@ -57,6 +60,7 @@ def gen_frames():
     cap = cv2.VideoCapture(1)
     while cap.isOpened():
         if not is_running:
+            # If not running, just keep sending the last frame
             if last_frame is not None:
                 ret, buffer = cv2.imencode('.jpg', last_frame)
                 frame = buffer.tobytes()
@@ -82,50 +86,25 @@ def gen_frames():
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-
 @app.route('/stop_detection', methods=["POST"])
 @cross_origin()
 def stop_detection():
-    global is_running, last_frame
-    is_running = False  # Stop the video stream and detection
-    print("Stopping detection...")  # Debug statement
+    global last_frame
+    print("Saving the last frame...")  # Debug statement
 
     # Save the last frame if it exists
     if last_frame is not None:
-        # Correct relative path to 'server/saved' folder
-        image_path = os.path.join("server", "saved", "last_frame.jpg")  
-
-        # Save the frame as an image file
-        cv2.imwrite(image_path, last_frame)
+        image_path = os.path.join("server", "saved", "last_frame.jpg")
+        cv2.imwrite(image_path, last_frame)  # Save the last frame
         print(f"Last frame saved at {image_path}")
     else:
         print("No frame to save.")  # Debug statement if last_frame is None
 
-    return "Detection Stopped, Last Frame Saved", 200
+    return "Last Frame Saved", 200
 
 @app.route('/video_feed')
 def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-
-@app.route('/last_detection')
-def get_last_detection():
-    global last_frame, last_detection, class_name
-    if last_frame is not None and last_detection is not None:
-        # Print out the last detected item
-        for result in last_detection:
-            for box in result.boxes:
-                class_id = int(box.cls[0])  # Class index
-                confidence = box.conf[0]    # Confidence score
-                class_name = result.names[class_id]  # Class name
-                print(class_name)
-        # Return the last frame as an image
-        ret, buffer = cv2.imencode('.jpg', last_frame)
-        return Response(buffer.tobytes(), mimetype='image/jpeg')
-    else:
-        return "No detection available", 404
-
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8000)
-    # http://localhost:8000/video for video source
-    # http://localhost:8000 for image source
