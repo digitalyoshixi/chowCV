@@ -100,7 +100,6 @@ def video_feed():
 
 @app.route('/last_detection')
 def get_last_detection():
-    print("getting detection...")
     global last_frame, last_detection, class_name
     if last_frame is not None and last_detection is not None:
         # Print out the last detected item
@@ -110,10 +109,12 @@ def get_last_detection():
                 confidence = box.conf[0]    # Confidence score
                 class_name = result.names[class_id]  # Class name
                 print(class_name)
-                breakpoint()
                 # add to database
-                db.additem(class_name, [0,0])
-                print("added to db")
+                db.additem(class_name, 0,0)
+                resp = tuple(db.getitemclass(class_name))
+                expiry = resp[2]
+                price = resp[3]
+
 
         # Return the last frame as an image
         ret, buffer = cv2.imencode('.jpg', last_frame)

@@ -16,7 +16,7 @@ def getitemclass(item):
                 # result = dbcurs.fetchone() # fetch only one row
                 # print(results)
                 for row in results:
-    	            print(row)
+    	            return row
             except (Exception, psycopg2.DatabaseError) as error:
                 print(error)
 
@@ -31,13 +31,13 @@ def additemclass(itemname, expiry, price):
     	        except (Exception, psycopg2.DatabaseError) as error:
     	            print(error)
 
-def additem(itemname, location):
+def additem(itemname, locx, locy):
     with conn: # assuming we have connection
     	with conn.cursor() as dbcurs:
     	        try:
     	            dbcurs.execute(f"""
     		            INSERT INTO itemlist (item,location) VALUES
-    		            ('{itemname}',[{location[0]},{location[1]}])
+    		            ('{itemname}',ARRAY[{locx},{locy}])
     	            """)
     	        except (Exception, psycopg2.DatabaseError) as error:
     	            print(error)
