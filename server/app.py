@@ -106,18 +106,11 @@ def stop_detection():
 
     return "Last Frame Saved", 200
 
-@app.route('/stop_detection', methods = ["post"])
-def stop_detection():
-    global is_running
-    is_running = False
-    return "Detection Stopped", 200
 
 @app.route('/video_feed')
 def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8000)
 
 
 @app.route('/last_detection')
