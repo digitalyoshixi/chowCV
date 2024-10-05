@@ -7,9 +7,13 @@ import cv2
 import os
 from flask_cors import CORS, cross_origin
 import db
+import random
 
 app = Flask(__name__,template_folder="templates")
 
+
+expiry = ""
+price = ""
 
 class Detection:
     def __init__(self):
@@ -47,7 +51,13 @@ def display_image():
     image_path = os.path.join("server", "saved", "last_frame.jpg")
     return Response(open(image_path, 'rb').read(), mimetype='image/jpeg')
 
+@app.route('/returnexpiry')
+def return_expiry():
+    return expiry
 
+@app.route('/returnexpiry')
+def return_price():
+    return price
 
 @app.route('/')
 def index_video():
@@ -56,9 +66,6 @@ def index_video():
 is_running = True
 last_frame = None
 last_detection = None
-
-
-
 
 
 def gen_frames():
@@ -101,6 +108,17 @@ def stop_detection():
         image_path = os.path.join("server", "saved", "last_frame.jpg")
         cv2.imwrite(image_path, last_frame)  # Save the last frame
         print(f"Last frame saved at {image_path}")
+        for result in last_detection:
+            for box in result.boxes:
+                class_id = int(box.cls[0])  # Class index
+                confidence = box.conf[0]    # Confidence score
+                class_name = result.names[class_id]  # Class name
+                print(class_name)
+                # add to database
+                db.additem(class_name, random.randint(-200,200),random.randint(-200,200))
+                resp = tuple(db.getitemclass(class_name))
+                expiry = resp[2]
+                price = resp[3]
     else:
         print("No frame to save.")  # Debug statement if last_frame is None
 
@@ -113,29 +131,29 @@ def video_feed():
 
 
 
-@app.route('/last_detection')
-def get_last_detection():
-    global last_frame, last_detection, class_name
-    if last_frame is not None and last_detection is not None:
-        # Print out the last detected item
-        for result in last_detection:
-            for box in result.boxes:
-                class_id = int(box.cls[0])  # Class index
-                confidence = box.conf[0]    # Confidence score
-                class_name = result.names[class_id]  # Class name
-                print(class_name)
-                # add to database
-                db.additem(class_name, 0,0)
-                resp = tuple(db.getitemclass(class_name))
-                expiry = resp[2]
-                price = resp[3]
-
-
-        # Return the last frame as an image
-        ret, buffer = cv2.imencode('.jpg', last_frame)
-        return Response(buffer.tobytes(), mimetype='image/jpeg')
-    else:
-        return "No detection available", 404
+#@app.route('/last_detection')
+#def get_last_detection():
+#    global last_frame, last_detection, class_name
+#    if last_frame is not None and last_detection is not None:
+#        # Print out the last detected item
+#        for result in last_detection:
+#            for box in result.boxes:
+#                class_id = int(box.cls[0])  # Class index
+#                confidence = box.conf[0]    # Confidence score
+#                class_name = result.names[class_id]  # Class name
+#                print(class_name)
+#                # add to database
+#                db.additem(class_name, 0,0)
+#                resp = tuple(db.getitemclass(class_name))
+#                expiry = resp[2]
+#                price = resp[3]
+#
+#
+#        # Return the last frame as an image
+#        ret, buffer = cv2.imencode('.jpg', last_frame)
+#        return Response(buffer.tobytes(), mimetype='image/jpeg')
+#    else:
+#        return "No detection available", 404
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8000)
