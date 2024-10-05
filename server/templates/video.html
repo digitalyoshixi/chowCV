@@ -62,27 +62,25 @@
 <body>
     <h1>Food Detection</h1>
     <img id="video" src="/video_feed" alt="Video Feed">
-    
     <!-- Stop and Resume detection buttons -->
     <button onclick="stopDetection()">Stop Detection</button>
-    <button id="resume-btn" onclick="resumeDetection()">Resume Detection</button>
-
     <script>
         function stopDetection() {
+            // Send a POST request to stop the detection
             fetch('/stop_detection', {
-                method: 'POST',
-            }).then(response => {
-                console.log('Detection stopped');
-            });
+                method: 'POST'
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Redirect to the last detection page when detection is stopped
+                    window.location.href = "/last_detection";
+                } else {
+                    alert("Failed to stop detection");
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
 
-        function resumeDetection() {
-            fetch('/resume_detection', {
-                method: 'POST',
-            }).then(response => {
-                console.log('Detection resumed');
-            });
-        }
     </script>
 </body>
 </html>
