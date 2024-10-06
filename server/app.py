@@ -8,6 +8,7 @@ import os
 from flask_cors import CORS, cross_origin
 import db
 import random
+import genchart
 
 app = Flask(__name__, template_folder="templates")
 CORS(app)  # Enable CORS for all routes
@@ -33,11 +34,14 @@ class Detection:
         results = self.predict(img, classes, conf=conf)
         for result in results:
             for box in result.boxes:
-                cv2.rectangle(img, (int(box.xyxy[0][0]), int(box.xyxy[0][1])),
-                              (int(box.xyxy[0][2]), int(box.xyxy[0][3])), (255, 0, 0), rectangle_thickness)
+                #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                #_, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+                #contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                #cv2.drawContours(img, contours, -1, (0, 255, 0), 4) 
+                #cv2.rectangle(img, (int(box.xyxy[0][0]), int(box.xyxy[0][1])),(int(box.xyxy[0][2]), int(box.xyxy[0][3])), (0, 255, 0), rectangle_thickness)
                 cv2.putText(img, f"{result.names[int(box.cls[0])]}",
-                            (int(box.xyxy[0][0]), int(box.xyxy[0][1]) - 10),
-                            cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), text_thickness)
+                            (int((box.xyxy[0][0] + box.xyxy[0][2])/2)-50, int(box.xyxy[0][1]) - 10),
+                            cv2.FONT_HERSHEY_TRIPLEX, 1, (0, 255, 0), text_thickness)
         return img, results
 
     def detect_from_image(self, image):
@@ -57,6 +61,12 @@ def return_item_data():
     # Print the current values for debugging
     print(f"Itemname: {itemname}, Price: {price}, Expiry: {expiry}, Info: {info}")
     
+    data = genchart.getitems()
+    return jsonify(data)
+
+
+@app.route('/api/db_chart', methods=['GET'])
+def return_chart_data():
     data = {
         'itemname': itemname,   # Include itemname
         'expiry': expiry,
