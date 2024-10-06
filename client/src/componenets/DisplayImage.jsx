@@ -75,18 +75,6 @@ function DisplayImage() {
                 </Text>
             </Stack>
         </HStack>
-        <div>
-            <h1>Last Detected Image</h1>
-            <img 
-                src="http://127.0.0.1:8000/display_image" 
-                alt="Last Frame" 
-                style={{ maxWidth: '100%', height: 'auto' }} 
-            />
-            <p>Item Name: {itemname}</p>  {/* Display itemname */}
-            <p>Price: ${price}</p>        
-            <p>Expiry: {expiry} days</p>      
-            <p>Info: {info}</p>          
-        </div>
     );
 }
 
