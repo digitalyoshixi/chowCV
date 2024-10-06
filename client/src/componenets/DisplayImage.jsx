@@ -65,10 +65,10 @@ function DisplayImage() {
                     Item Name: {itemname}
                 </Text>
                 <Text fontSize="lg" fontWeight="bold" color="blue.600">
-                    Price: {price}
+                    Price: ${price}
                 </Text>
                 <Text fontSize="lg" fontWeight="bold" color="orange.600">
-                    Expiry: {expiry}
+                    Expiry: {expiry} days
                 </Text>
                 <Text fontSize="md" color="gray.600">
                     Info: {info}
