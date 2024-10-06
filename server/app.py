@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, Response
+from flask import Flask, request, render_template, Response, jsonify
 from werkzeug.utils import secure_filename
 import io
 from ultralytics import YOLO
@@ -9,11 +9,12 @@ from flask_cors import CORS, cross_origin
 import db
 import random
 
-app = Flask(__name__,template_folder="templates")
+app = Flask(__name__, template_folder="templates")
+CORS(app)  # Enable CORS for all routes
 
-
-expiry = ""
-price = ""
+expiry = "88"
+price = "99"
+info = ""
 
 class Detection:
     def __init__(self):
@@ -51,13 +52,19 @@ def display_image():
     image_path = os.path.join("server", "saved", "last_frame.jpg")
     return Response(open(image_path, 'rb').read(), mimetype='image/jpeg')
 
-@app.route('/returnexpiry')
-def return_expiry():
-    return expiry
+@app.route('/api/return_item_data', methods=['GET'])
+def return_item_data():
+    # Print the current values for debugging
+    print(f"Itemname: {itemname}, Price: {price}, Expiry: {expiry}, Info: {info}")
+    
+    data = {
+        'itemname': itemname,   # Include itemname
+        'expiry': expiry,
+        'price': price,
+        'info': info
+    }
+    return jsonify(data)
 
-@app.route('/returnexpiry')
-def return_price():
-    return price
 
 @app.route('/')
 def index_video():
@@ -100,36 +107,50 @@ def gen_frames():
 @app.route('/stop_detection', methods=["POST"])
 @cross_origin()
 def stop_detection():
-    global last_frame
-    print("Saving the last frame...")  # Debug statement
+    global last_frame, expiry, price, info, itemname
+    print("Saving the last frame...")
 
     # Save the last frame if it exists
     if last_frame is not None:
         image_path = os.path.join("server", "saved", "last_frame.jpg")
-        cv2.imwrite(image_path, last_frame)  # Save the last frame
+        cv2.imwrite(image_path, last_frame)
         print(f"Last frame saved at {image_path}")
+
+        # Iterate over the detection results
         for result in last_detection:
             for box in result.boxes:
-                class_id = int(box.cls[0])  # Class index
-                confidence = box.conf[0]    # Confidence score
-                class_name = result.names[class_id]  # Class name
+                class_id = int(box.cls[0])
+                class_name = result.names[class_id]  # This is the item name
                 print(class_name)
-                # add to database
-                db.additem(class_name, random.randint(-200,200),random.randint(-200,200))
-                resp = tuple(db.getitemclass(class_name))
-                expiry = resp[2]
-                price = resp[3]
+
+                # Fetch item details from the database
+                resp = db.getitemclass(class_name)
+
+                if resp:
+                    itemname = resp['itemname']
+                    expiry = resp['expiry']
+                    price = resp['price']
+                    info = resp['info']
+                    
+                    # Log the database result to the console
+                    print(f"Database result: {resp}")
+                else:
+                    print("No details found for class name:", class_name)
     else:
-        print("No frame to save.")  # Debug statement if last_frame is None
+        print("No frame to save.")
 
-    return "Last Frame Saved", 200
-
+    # Return the database result to the frontend as a JSON response
+    return jsonify({
+        'message': "Last Frame Saved",
+        'itemname': itemname,
+        'expiry': expiry,
+        'price': price,
+        'info': info
+    }), 200
 
 @app.route('/video_feed')
 def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
 
 #@app.route('/last_detection')
 #def get_last_detection():
