@@ -38,7 +38,7 @@ class Detection:
                 #_, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
                 #contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                 #cv2.drawContours(img, contours, -1, (0, 255, 0), 4) 
-                #cv2.rectangle(img, (int(box.xyxy[0][0]), int(box.xyxy[0][1])),(int(box.xyxy[0][2]), int(box.xyxy[0][3])), (0, 255, 0), rectangle_thickness)
+                cv2.rectangle(img, (int(box.xyxy[0][0]), int(box.xyxy[0][1])),(int(box.xyxy[0][2]), int(box.xyxy[0][3])), (0, 255, 0), rectangle_thickness)
                 cv2.putText(img, f"{result.names[int(box.cls[0])]}",
                             (int((box.xyxy[0][0] + box.xyxy[0][2])/2)-50, int(box.xyxy[0][1]) - 10),
                             cv2.FONT_HERSHEY_TRIPLEX, 1, (0, 255, 0), text_thickness)
