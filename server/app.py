@@ -61,18 +61,18 @@ def return_item_data():
     # Print the current values for debugging
     print(f"Itemname: {itemname}, Price: {price}, Expiry: {expiry}, Info: {info}")
     
-    data = genchart.getitems()
-    return jsonify(data)
-
-
-@app.route('/api/db_chart', methods=['GET'])
-def return_chart_data():
     data = {
         'itemname': itemname,   # Include itemname
         'expiry': expiry,
         'price': price,
         'info': info
     }
+    return jsonify(data)
+
+
+@app.route('/api/db_chart', methods=['GET'])
+def return_chart_data():
+    data = genchart.getitems()
     return jsonify(data)
 
 
