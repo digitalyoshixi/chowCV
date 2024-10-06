@@ -10,9 +10,6 @@ function App() {
         <Route path="/" element={<Video />} />
         <Route path="/display_image" element={<DisplayImage />} /> {/* Ensure this matches the navigation path */}
       </Routes>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </Router>
   );
 }

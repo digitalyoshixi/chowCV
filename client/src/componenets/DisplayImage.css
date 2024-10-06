@@ -1,0 +1,62 @@
+/* styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e9ecef;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center; /* Center all text */
+    max-width: 600px; /* Wider container for better display */
+    padding: 20px; /* Uniform padding */
+}
+
+img {
+    max-width: 100%; /* Full width image */
+    height: auto;
+    border-radius: 15px; /* Rounded edges for the image */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+}
+
+h1 {
+    color: #007bff; /* Blue color for the title */
+    font-size: 2em; /* Larger font size for the title */
+    margin-bottom: 15px; /* Space below the title */
+}
+
+.info {
+    background-color: transparent; /* No background color for the info section */
+    padding: 15px; /* Padding inside the info section */
+    margin-top: 20px; /* Space above the info section */
+}
+
+.itemname,
+.price,
+.expiry,
+.infoText {
+    color: #333333; /* Dark gray text for readability */
+    margin: 8px 0; /* Consistent margin for paragraphs */
+    font-weight: bold; /* Bold text for emphasis */
+}
+
+.itemname {
+    color: #ff793b; /* Yellow for item name */
+}
+
+.price {
+    color: #32cd32; /* LimeGreen for price */
+}
+
+.expiry {
+    color: #ffa500; /* Orange for expiry */
+}
+
+.infoText {
+    color: #666666; /* Lighter gray for additional info */
+}
