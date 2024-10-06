@@ -46,9 +46,3 @@ def additem(itemname, locx, locy):
                 except (Exception, psycopg2.DatabaseError) as error:
                     print(error)
 
-#getitem("milk")
-#additem("goat", 90, 20)
-#getitem("goat")
-
-
-# HELLO

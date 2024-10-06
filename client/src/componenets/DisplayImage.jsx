@@ -25,7 +25,7 @@ function DisplayImage() {
             alignItems="center"
             height="100vh"
             spacing={10}
-            bgGradient="linear(to-r, gray.100, gray.300)"
+            bgGradient="linear(to-r, gray.700, gray.900)"
             padding={8}
         >
             <Box
@@ -35,8 +35,8 @@ function DisplayImage() {
                 width="512px"
                 maxWidth="100%"
                 border="2px solid"
-                borderColor="green.500"
-                bg="white"
+                borderColor="green.400"
+                bg="gray.800"
             >
                 <Image
                     src="http://127.0.0.1:8000/display_image"
@@ -51,26 +51,26 @@ function DisplayImage() {
                 spacing={4}
                 width="512px"
                 maxWidth="100%"
-                bg="white"
+                bg="gray.800"
                 boxShadow="md"
                 padding={6}
                 rounded="md"
                 border="1px solid"
-                borderColor="gray.300"
+                borderColor="gray.600"
                 textAlign="left"
             >
-                <Heading size="md" color="green.500">Item Details</Heading>
-                <Divider />
-                <Text fontSize="lg" fontWeight="bold" color="orange.600">
+                <Heading size="md" color="green.400">Item Details</Heading>
+                <Divider borderColor="gray.600" />
+                <Text fontSize="lg" fontWeight="bold" color="orange.300">
                     Item Name: {itemname}
                 </Text>
-                <Text fontSize="lg" fontWeight="bold" color="blue.600">
+                <Text fontSize="lg" fontWeight="bold" color="blue.300">
                     Price: ${price}
                 </Text>
-                <Text fontSize="lg" fontWeight="bold" color="orange.600">
+                <Text fontSize="lg" fontWeight="bold" color="orange.300">
                     Expiry: {expiry} days
                 </Text>
-                <Text fontSize="md" color="gray.600">
+                <Text fontSize="md" color="gray.300">
                     Info: {info}
                 </Text>
             </Stack>

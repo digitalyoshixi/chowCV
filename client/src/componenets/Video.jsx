@@ -38,18 +38,18 @@ function Video() {
             alignItems="center"
             height="100vh"
             spacing={8}
-            bgGradient="linear(to-r, gray.200, gray.400)"
+            bgGradient="linear(to-r, gray.700, gray.900)"
             padding={4}
         >
-            <Heading color="blue.700">Live Object Detection</Heading>
+            <Heading color="gray.100">Live Object Detection</Heading>
             <Box
                 boxShadow="xl"
                 rounded="lg"
                 overflow="hidden"
                 width="512px"
                 border="2px solid"
-                borderColor="blue.500"
-                bg="white"
+                borderColor="gray.600"
+                bg="gray.800"
             >
                 <Image
                     src="http://127.0.0.1:8000/video_feed"
@@ -64,6 +64,7 @@ function Video() {
                 onClick={handleStop}
                 _hover={{ bg: 'red.600' }}
                 _active={{ bg: 'red.700' }}
+                color="white"
             >
                 Stop Detection
             </Button>
