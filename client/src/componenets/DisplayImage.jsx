@@ -32,8 +32,8 @@ function DisplayImage() {
                 style={{ maxWidth: '100%', height: 'auto' }} 
             />
             <p>Item Name: {itemname}</p>  {/* Display itemname */}
-            <p>Price: {price}</p>        
-            <p>Expiry: {expiry}</p>      
+            <p>Price: ${price}</p>        
+            <p>Expiry: {expiry} days</p>      
             <p>Info: {info}</p>          
         </div>
     );
